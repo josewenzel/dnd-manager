@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-player: 31 41 55;
+    --color-player-icon: 55 65 81;
+    --color-ally: 59 130 246;
+    --color-ally-light: 239 246 255;
+    --color-monster: 239 68 68;
+    --color-monster-light: 254 242 242;
+    --color-hp: 239 68 68;
+    --color-hp-bg: 254 226 226;
+    --color-status: 147 51 234;
+    --color-status-bg: 243 232 255;
+    --color-initiative-default: 31 41 55;
+    --color-card-border: 209 213 219;
+    --color-card-bg: 255 255 255;
+    --color-card-hover: 249 250 251;
+    --color-arrow: 55 65 81;
+    --color-arrow-hover: 31 41 55;
+    --color-input-border: 209 213 219;
+    --color-suggestion-hover: 243 244 246;
+    --color-tooltip-bg: 17 24 39;
+    --color-colorpicker-border: 209 213 219;
+  }
+  
+  * {
+    @apply border-gray-200;
+  }
+  body {
+    @apply bg-white text-black;
+  }
+}
