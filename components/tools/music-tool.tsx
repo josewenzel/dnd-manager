@@ -1,49 +1,18 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { YouTubePlayer } from "@/components/tools/youtube-player"
 import { Play, Trash2, Plus } from "lucide-react"
 import Image from "next/image"
-import Cookies from "js-cookie"
-
-interface Video {
-  id: string
-  title: string
-  youtubeUrl: string
-}
-
-const PLAYLIST_COOKIE = "dnd_music_playlist"
+import { useMusicContext } from "@/contexts/music-context"
 
 export function MusicTool() {
-  const [videos, setVideos] = useState<Video[]>([])
-  const [currentVideoId, setCurrentVideoId] = useState<string | null>(null)
+  const { videos, currentVideoId, setCurrentVideoId, addVideo, deleteVideo } = useMusicContext()
   const [urlInput, setUrlInput] = useState("")
   const [titleInput, setTitleInput] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
-  const playerRef = useRef<{ stopVideo: () => void } | null>(null)
-
-  useEffect(() => {
-    const savedPlaylist = Cookies.get(PLAYLIST_COOKIE)
-    if (savedPlaylist) {
-      try {
-        const parsed = JSON.parse(savedPlaylist)
-        setVideos(parsed)
-      } catch (e) {
-        console.error("Failed to parse playlist cookie:", e)
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    if (videos.length > 0) {
-      Cookies.set(PLAYLIST_COOKIE, JSON.stringify(videos), { expires: 365 })
-    } else {
-      Cookies.remove(PLAYLIST_COOKIE)
-    }
-  }, [videos])
 
   const extractYouTubeId = (url: string): string | null => {
     try {
@@ -71,33 +40,24 @@ export function MusicTool() {
       return
     }
 
-    const newVideo: Video = {
+    const newVideo = {
       id: `video-${Date.now()}`,
       title: titleInput,
       youtubeUrl: `https://www.youtube.com/embed/${youtubeId}`,
     }
 
-    setVideos([...videos, newVideo])
+    addVideo(newVideo)
     setTitleInput("")
     setUrlInput("")
     setShowAddForm(false)
   }
 
   const handlePlayVideo = (videoId: string) => {
-    if (currentVideoId && currentVideoId !== videoId && playerRef.current) {
-      playerRef.current.stopVideo?.()
-    }
     setCurrentVideoId(videoId)
   }
 
   const handleDeleteVideo = (videoId: string) => {
-    if (currentVideoId === videoId) {
-      setCurrentVideoId(null)
-      if (playerRef.current) {
-        playerRef.current.stopVideo?.()
-      }
-    }
-    setVideos(videos.filter((v) => v.id !== videoId))
+    deleteVideo(videoId)
   }
 
   const getYouTubeThumbnail = (embedUrl: string) => {
@@ -109,16 +69,6 @@ export function MusicTool() {
     <div className="flex-1 p-8 overflow-auto bg-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold mb-8 text-black">Music Player</h2>
-
-        {currentVideoId && (
-          <div className="mb-8 max-w-4xl mx-auto">
-            <YouTubePlayer
-              ref={playerRef}
-              videoUrl={videos.find((v) => v.id === currentVideoId)?.youtubeUrl || ""}
-              onVideoChange={() => {}}
-            />
-          </div>
-        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video) => (
