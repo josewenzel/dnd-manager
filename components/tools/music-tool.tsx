@@ -1,18 +1,21 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { YouTubePlayer } from "@/components/tools/youtube-player"
 import { Play, Trash2, Plus } from "lucide-react"
 import Image from "next/image"
+import Cookies from "js-cookie"
 
 interface Video {
   id: string
   title: string
   youtubeUrl: string
 }
+
+const PLAYLIST_COOKIE = "dnd_music_playlist"
 
 export function MusicTool() {
   const [videos, setVideos] = useState<Video[]>([])
@@ -21,6 +24,26 @@ export function MusicTool() {
   const [titleInput, setTitleInput] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
   const playerRef = useRef<{ stopVideo: () => void } | null>(null)
+
+  useEffect(() => {
+    const savedPlaylist = Cookies.get(PLAYLIST_COOKIE)
+    if (savedPlaylist) {
+      try {
+        const parsed = JSON.parse(savedPlaylist)
+        setVideos(parsed)
+      } catch (e) {
+        console.error("Failed to parse playlist cookie:", e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (videos.length > 0) {
+      Cookies.set(PLAYLIST_COOKIE, JSON.stringify(videos), { expires: 365 })
+    } else {
+      Cookies.remove(PLAYLIST_COOKIE)
+    }
+  }, [videos])
 
   const extractYouTubeId = (url: string): string | null => {
     try {
