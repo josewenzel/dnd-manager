@@ -4,12 +4,19 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Trash2, User, ExternalLink } from "lucide-react"
+import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen } from "lucide-react"
 import { MONSTERS } from "@/lib/monsters-data"
 
 interface Player {
   id: string
+  name: string
   level: number
+}
+
+interface SavedParty {
+  id: string
+  name: string
+  players: Player[]
 }
 
 interface EncounterMonster {
@@ -85,25 +92,86 @@ const XP_THRESHOLDS_BY_LEVEL: Record<number, DifficultyThreshold> = {
 
 export function EncounterCreator() {
   const [players, setPlayers] = useState<Player[]>([])
+  const [nameInput, setNameInput] = useState("")
   const [levelInput, setLevelInput] = useState("")
   const [monsters, setMonsters] = useState<EncounterMonster[]>([])
   const [monsterInput, setMonsterInput] = useState("")
   const [monsterCountInput, setMonsterCountInput] = useState("1")
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [savedParties, setSavedParties] = useState<SavedParty[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("dnd-saved-parties")
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
+  const [partyNameInput, setPartyNameInput] = useState("")
+  const [showSavedParties, setShowSavedParties] = useState(false)
 
   const handleAddPlayer = () => {
+    if (!nameInput.trim()) {
+      alert("Please enter a player name")
+      return
+    }
     const level = parseInt(levelInput)
     if (isNaN(level) || level < 1 || level > 20) {
       alert("Level must be between 1 and 20")
       return
     }
 
-    setPlayers([...players, { id: `player-${Date.now()}`, level }])
+    setPlayers([...players, { id: `player-${Date.now()}`, name: nameInput.trim(), level }])
+    setNameInput("")
     setLevelInput("")
   }
 
   const handleDeletePlayer = (id: string) => {
     setPlayers(players.filter((p) => p.id !== id))
+  }
+
+  const handleLevelChange = (id: string, delta: number) => {
+    setPlayers(
+      players.map((p) => {
+        if (p.id === id) {
+          const newLevel = Math.max(1, Math.min(20, p.level + delta))
+          return { ...p, level: newLevel }
+        }
+        return p
+      })
+    )
+  }
+
+  const handleSaveParty = () => {
+    if (!partyNameInput.trim()) {
+      alert("Please enter a party name")
+      return
+    }
+    if (players.length === 0) {
+      alert("Add at least one player to save the party")
+      return
+    }
+
+    const newParty: SavedParty = {
+      id: `party-${Date.now()}`,
+      name: partyNameInput.trim(),
+      players: [...players],
+    }
+
+    const updated = [...savedParties, newParty]
+    setSavedParties(updated)
+    localStorage.setItem("dnd-saved-parties", JSON.stringify(updated))
+    setPartyNameInput("")
+    alert(`Party "${newParty.name}" saved!`)
+  }
+
+  const handleLoadParty = (party: SavedParty) => {
+    setPlayers([...party.players])
+    setShowSavedParties(false)
+  }
+
+  const handleDeleteParty = (id: string) => {
+    const updated = savedParties.filter((p) => p.id !== id)
+    setSavedParties(updated)
+    localStorage.setItem("dnd-saved-parties", JSON.stringify(updated))
   }
 
   const handleAddMonster = (monsterName: string) => {
@@ -254,49 +322,135 @@ export function EncounterCreator() {
                 <CardTitle className="text-lg">Party</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-600 mb-2 block">Player Level</label>
-                  <div className="flex gap-2">
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm text-gray-600 mb-2 block">Player Name</label>
                     <Input
-                      type="number"
-                      placeholder="1-20"
-                      value={levelInput}
-                      onChange={(e) => setLevelInput(e.target.value)}
+                      type="text"
+                      placeholder="Enter name"
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddPlayer()}
-                      min="1"
-                      max="20"
-                      className="flex-1"
                     />
-                    <Button onClick={handleAddPlayer} size="sm" className="px-3">
-                      <Plus size={16} />
-                    </Button>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-600 mb-2 block">Level</label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="1-20"
+                        value={levelInput}
+                        onChange={(e) => setLevelInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleAddPlayer()}
+                        min="1"
+                        max="20"
+                        className="flex-1"
+                      />
+                      <Button onClick={handleAddPlayer} size="sm" className="px-3">
+                        <Plus size={16} />
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
                 {players.length > 0 && (
-                  <div className="space-y-2">
-                    {players.map((player, index) => (
-                      <div
-                        key={player.id}
-                        className="flex items-center justify-between p-3 rounded-md border border-card-border bg-card-bg"
-                      >
-                        <div className="flex items-center gap-2">
-                          <User size={16} className="text-player-icon" />
-                          <span className="text-sm">
-                            Player {index + 1} - Level {player.level}
-                          </span>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeletePlayer(player.id)}
-                          className="px-2 text-red-600 hover:text-red-700"
+                  <>
+                    <div className="space-y-2">
+                      {players.map((player) => (
+                        <div
+                          key={player.id}
+                          className="flex items-center justify-between p-3 rounded-md border border-card-border bg-card-bg"
                         >
-                          <Trash2 size={14} />
+                          <div className="flex items-center gap-2 flex-1">
+                            <User size={16} className="text-player-icon" />
+                            <div className="flex-1">
+                              <div className="text-sm font-medium">{player.name}</div>
+                              <div className="text-xs text-gray-500">Level {player.level}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleLevelChange(player.id, -1)}
+                              className="px-2 h-7"
+                              disabled={player.level <= 1}
+                            >
+                              <ChevronDown size={14} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleLevelChange(player.id, 1)}
+                              className="px-2 h-7"
+                              disabled={player.level >= 20}
+                            >
+                              <ChevronUp size={14} />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDeletePlayer(player.id)}
+                              className="px-2 h-7 text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="pt-2 border-t space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          type="text"
+                          placeholder="Party name"
+                          value={partyNameInput}
+                          onChange={(e) => setPartyNameInput(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleSaveParty()}
+                          className="flex-1"
+                        />
+                        <Button onClick={handleSaveParty} size="sm" className="px-3">
+                          <Save size={16} />
+                        </Button>
+                        <Button
+                          onClick={() => setShowSavedParties(!showSavedParties)}
+                          size="sm"
+                          variant="outline"
+                          className="px-3"
+                        >
+                          <FolderOpen size={16} />
                         </Button>
                       </div>
-                    ))}
-                  </div>
+                      {showSavedParties && savedParties.length > 0 && (
+                        <div className="space-y-1 max-h-48 overflow-y-auto">
+                          {savedParties.map((party) => (
+                            <div
+                              key={party.id}
+                              className="flex items-center justify-between p-2 rounded border border-gray-200 bg-gray-50"
+                            >
+                              <button
+                                onClick={() => handleLoadParty(party)}
+                                className="flex-1 text-left text-sm hover:text-blue-600"
+                              >
+                                <div className="font-medium">{party.name}</div>
+                                <div className="text-xs text-gray-500">
+                                  {party.players.length} player{party.players.length !== 1 ? "s" : ""}
+                                </div>
+                              </button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleDeleteParty(party.id)}
+                                className="px-2 h-7 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 size={12} />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
                 )}
 
                 {players.length === 0 && (
