@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Trash2, User } from "lucide-react"
+import { Plus, Trash2, User, ExternalLink } from "lucide-react"
 import { MONSTERS } from "@/lib/monsters-data"
 
 interface Player {
@@ -148,6 +148,11 @@ export function EncounterCreator() {
   const handleSelectMonster = (monsterName: string) => {
     setMonsterInput(monsterName)
     setShowSuggestions(false)
+  }
+
+  const getMonsterUrl = (monsterName: string): string => {
+    const formattedName = monsterName.replace(/\s+/g, "")
+    return `https://roll20.net/compendium/dnd5e/Monsters:${formattedName}/#h-${formattedName}`
   }
 
   const calculateEncounterDifficulty = (): {
@@ -365,11 +370,19 @@ export function EncounterCreator() {
                     {monsters.map((monster) => (
                       <div
                         key={monster.id}
-                        className="flex items-center justify-between p-3 rounded-md border border-card-border bg-card-bg"
+                        className="flex items-center justify-between p-3 rounded-md border border-card-border bg-card-bg group"
                       >
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">{monster.name}</span>
+                            <a
+                              href={getMonsterUrl(monster.name)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm font-medium hover:text-blue-600 hover:underline flex items-center gap-1"
+                            >
+                              {monster.name}
+                              <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
                             <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
                               CR {monster.cr}
                             </span>
