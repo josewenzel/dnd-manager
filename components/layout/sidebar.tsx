@@ -1,6 +1,6 @@
 "use client"
 
-import { Music, Swords } from "lucide-react"
+import { Music, Swords, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ReactNode } from "react"
 
@@ -20,6 +20,11 @@ const TOOLS: Tool[] = [
     id: "initiative",
     name: "Initiative",
     icon: <Swords size={20} />,
+  },
+  {
+    id: "encounter",
+    name: "Encounter Creator",
+    icon: <Users size={20} />,
   },
 ]
 
