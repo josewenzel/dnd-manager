@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen } from "lucide-react"
 import { MONSTERS } from "@/lib/monsters-data"
+import Cookies from "js-cookie"
 
 interface Player {
   id: string
@@ -98,15 +99,29 @@ export function EncounterCreator() {
   const [monsterInput, setMonsterInput] = useState("")
   const [monsterCountInput, setMonsterCountInput] = useState("1")
   const [showSuggestions, setShowSuggestions] = useState(false)
-  const [savedParties, setSavedParties] = useState<SavedParty[]>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("dnd-saved-parties")
-      return saved ? JSON.parse(saved) : []
-    }
-    return []
-  })
+  const [savedParties, setSavedParties] = useState<SavedParty[]>([])
   const [partyNameInput, setPartyNameInput] = useState("")
   const [showSavedParties, setShowSavedParties] = useState(false)
+
+  useEffect(() => {
+    const savedCookie = Cookies.get("dnd-saved-parties")
+    if (savedCookie) {
+      try {
+        const parsed = JSON.parse(savedCookie)
+        setSavedParties(parsed)
+      } catch (e) {
+        console.error("Failed to parse saved parties cookie:", e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (savedParties.length > 0) {
+      Cookies.set("dnd-saved-parties", JSON.stringify(savedParties), { expires: 365 })
+    } else {
+      Cookies.remove("dnd-saved-parties")
+    }
+  }, [savedParties])
 
   const handleAddPlayer = () => {
     if (!nameInput.trim()) {
@@ -158,7 +173,6 @@ export function EncounterCreator() {
 
     const updated = [...savedParties, newParty]
     setSavedParties(updated)
-    localStorage.setItem("dnd-saved-parties", JSON.stringify(updated))
     setPartyNameInput("")
     alert(`Party "${newParty.name}" saved!`)
   }
@@ -171,7 +185,6 @@ export function EncounterCreator() {
   const handleDeleteParty = (id: string) => {
     const updated = savedParties.filter((p) => p.id !== id)
     setSavedParties(updated)
-    localStorage.setItem("dnd-saved-parties", JSON.stringify(updated))
   }
 
   const handleAddMonster = (monsterName: string) => {
@@ -315,11 +328,71 @@ export function EncounterCreator() {
           <h2 className="text-3xl font-bold text-black">Encounter Creator</h2>
         </div>
 
+        {showSavedParties && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-lg font-semibold">Saved Parties</h3>
+                <button
+                  onClick={() => setShowSavedParties(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-4 max-h-96 overflow-y-auto">
+                {savedParties.length === 0 ? (
+                  <div className="text-center text-gray-400 py-8">
+                    <p className="text-sm">No saved parties yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {savedParties.map((party) => (
+                      <div
+                        key={party.id}
+                        className="flex items-center justify-between p-3 rounded border border-gray-200 bg-gray-50 hover:bg-gray-100"
+                      >
+                        <button
+                          onClick={() => handleLoadParty(party)}
+                          className="flex-1 text-left"
+                        >
+                          <div className="text-sm font-medium">{party.name}</div>
+                          <div className="text-xs text-gray-500">
+                            {party.players.length} player{party.players.length !== 1 ? "s" : ""}
+                          </div>
+                        </button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteParty(party.id)}
+                          className="px-2 h-7 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Party</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Party</CardTitle>
+                  <Button
+                    onClick={() => setShowSavedParties(true)}
+                    size="sm"
+                    variant="outline"
+                    className="px-3"
+                  >
+                    <FolderOpen size={16} />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
@@ -399,7 +472,8 @@ export function EncounterCreator() {
                         </div>
                       ))}
                     </div>
-                    <div className="pt-2 border-t space-y-2">
+
+                    <div className="pt-2 border-t">
                       <div className="flex gap-2">
                         <Input
                           type="text"
@@ -412,43 +486,7 @@ export function EncounterCreator() {
                         <Button onClick={handleSaveParty} size="sm" className="px-3">
                           <Save size={16} />
                         </Button>
-                        <Button
-                          onClick={() => setShowSavedParties(!showSavedParties)}
-                          size="sm"
-                          variant="outline"
-                          className="px-3"
-                        >
-                          <FolderOpen size={16} />
-                        </Button>
                       </div>
-                      {showSavedParties && savedParties.length > 0 && (
-                        <div className="space-y-1 max-h-48 overflow-y-auto">
-                          {savedParties.map((party) => (
-                            <div
-                              key={party.id}
-                              className="flex items-center justify-between p-2 rounded border border-gray-200 bg-gray-50"
-                            >
-                              <button
-                                onClick={() => handleLoadParty(party)}
-                                className="flex-1 text-left text-sm hover:text-blue-600"
-                              >
-                                <div className="font-medium">{party.name}</div>
-                                <div className="text-xs text-gray-500">
-                                  {party.players.length} player{party.players.length !== 1 ? "s" : ""}
-                                </div>
-                              </button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleDeleteParty(party.id)}
-                                className="px-2 h-7 text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 size={12} />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </>
                 )}
