@@ -431,15 +431,18 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
     const monsterCombatants: Combatant[] = combatSetup.monsters
       .filter(m => m.initiative.trim() !== "")
-      .map(monster => ({
-        id: monster.id,
-        name: monster.name,
-        initiative: parseInt(monster.initiative) || 0,
-        type: "monster" as const,
-        color: "#ef4444",
-        currentHp: parseInt(monster.hp) || monster.maxHp,
-        maxHp: monster.maxHp,
-      }))
+      .map(monster => {
+        const hpValue = parseInt(monster.hp) || monster.maxHp
+        return {
+          id: monster.id,
+          name: monster.name,
+          initiative: parseInt(monster.initiative) || 0,
+          type: "monster" as const,
+          color: "#ef4444",
+          currentHp: hpValue,
+          maxHp: hpValue,
+        }
+      })
 
     const allCombatants = [...playerCombatants, ...monsterCombatants]
     
