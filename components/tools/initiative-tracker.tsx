@@ -203,9 +203,8 @@ export function InitiativeTracker() {
 
   return (
     <div className="flex-1 p-8 overflow-auto bg-white">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-black">Initiative Tracker</h2>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl font-bold text-black">Initiative Tracker</h2>
           {combatants.length > 0 && (
             <Button variant="destructive" onClick={handleClearAll} className="gap-2">
               <Trash2 size={16} />
@@ -213,7 +212,7 @@ export function InitiativeTracker() {
             </Button>
           )}
         </div>
-
+      <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <Card>
