@@ -211,9 +211,123 @@ export function InitiativeTracker() {
               Clear All
             </Button>
           )}
-        </div>
-      <div className="max-w-4xl mx-auto">
+      </div>
+
+      <div className="max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="space-y-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Add Combatant</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <label className="text-sm text-gray-600 mb-2 block">Name</label>
+                  <Input
+                    placeholder="e.g., Goblin #1"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddCombatant()}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-2 block">Initiative</label>
+                  <Input
+                    type="number"
+                    placeholder="e.g., 15"
+                    value={initiativeInput}
+                    onChange={(e) => setInitiativeInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddCombatant()}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-600 mb-2 block">Type</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setTypeInput("player")}
+                      className={`justify-center ${typeInput === "player" ? "border-2 border-player-icon bg-gray-100" : ""}`}
+                    >
+                      Player
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setTypeInput("ally")}
+                      className={`justify-center ${typeInput === "ally" ? "border-2 border-ally bg-ally-light" : ""}`}
+                    >
+                      Ally
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setTypeInput("monster")}
+                      className={`justify-center ${typeInput === "monster" ? "border-2 border-monster bg-monster-light" : ""}`}
+                    >
+                      Monster
+                    </Button>
+                  </div>
+                </div>
+                {(typeInput === "monster" || typeInput === "ally") && (
+                  <div>
+                    <label className="text-sm text-gray-600 mb-2 block">Hit Points (Optional)</label>
+                    <Input
+                      type="number"
+                      placeholder="e.g., 45"
+                      value={hpInput}
+                      onChange={(e) => setHpInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAddCombatant()}
+                    />
+                  </div>
+                )}
+                <Button onClick={handleAddCombatant} className="w-full gap-2">
+                  <Plus size={16} />
+                  Add Combatant
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Statistics</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Total Combatants:</span>
+                  <span className="font-medium">{combatants.length}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <User size={14} className="text-gray-700" />
+                    Players:
+                  </span>
+                  <span className="font-medium">
+                    {combatants.filter((c) => c.type === "player").length}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <Shield size={14} className="text-ally" />
+                    Allies:
+                  </span>
+                  <span className="font-medium">
+                    {combatants.filter((c) => c.type === "ally").length}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <Swords size={14} className="text-monster" />
+                    Monsters:
+                  </span>
+                  <span className="font-medium">
+                    {combatants.filter((c) => c.type === "monster").length}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
@@ -408,119 +522,6 @@ export function InitiativeTracker() {
                     ))}
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Add Combatant</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <label className="text-sm text-gray-600 mb-2 block">Name</label>
-                  <Input
-                    placeholder="e.g., Goblin #1"
-                    value={nameInput}
-                    onChange={(e) => setNameInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddCombatant()}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600 mb-2 block">Initiative</label>
-                  <Input
-                    type="number"
-                    placeholder="e.g., 15"
-                    value={initiativeInput}
-                    onChange={(e) => setInitiativeInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddCombatant()}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm text-gray-600 mb-2 block">Type</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setTypeInput("player")}
-                      className={`justify-center ${typeInput === "player" ? "border-2 border-player-icon bg-gray-100" : ""}`}
-                    >
-                      Player
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setTypeInput("ally")}
-                      className={`justify-center ${typeInput === "ally" ? "border-2 border-ally bg-ally-light" : ""}`}
-                    >
-                      Ally
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setTypeInput("monster")}
-                      className={`justify-center ${typeInput === "monster" ? "border-2 border-monster bg-monster-light" : ""}`}
-                    >
-                      Monster
-                    </Button>
-                  </div>
-                </div>
-                {(typeInput === "monster" || typeInput === "ally") && (
-                  <div>
-                    <label className="text-sm text-gray-600 mb-2 block">Hit Points (Optional)</label>
-                    <Input
-                      type="number"
-                      placeholder="e.g., 45"
-                      value={hpInput}
-                      onChange={(e) => setHpInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleAddCombatant()}
-                    />
-                  </div>
-                )}
-                <Button onClick={handleAddCombatant} className="w-full gap-2">
-                  <Plus size={16} />
-                  Add Combatant
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Statistics</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Total Combatants:</span>
-                  <span className="font-medium">{combatants.length}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 flex items-center gap-1">
-                    <User size={14} className="text-gray-700" />
-                    Players:
-                  </span>
-                  <span className="font-medium">
-                    {combatants.filter((c) => c.type === "player").length}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 flex items-center gap-1">
-                    <Shield size={14} className="text-ally" />
-                    Allies:
-                  </span>
-                  <span className="font-medium">
-                    {combatants.filter((c) => c.type === "ally").length}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 flex items-center gap-1">
-                    <Swords size={14} className="text-monster" />
-                    Monsters:
-                  </span>
-                  <span className="font-medium">
-                    {combatants.filter((c) => c.type === "monster").length}
-                  </span>
-                </div>
               </CardContent>
             </Card>
           </div>

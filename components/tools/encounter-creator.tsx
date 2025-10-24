@@ -478,8 +478,8 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-black">Encounter Creator</h2>
       </div>
-      <div className="max-w-6xl mx-auto">
 
+      <div className="max-w-6xl">
         {showSavedParties && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">

@@ -68,8 +68,8 @@ export function MusicTool() {
   return (
     <div className="flex-1 p-8 overflow-auto bg-white">
       <h2 className="text-3xl font-bold mb-8 text-black">Music Player</h2>
-      <div className="max-w-7xl mx-auto">
 
+      <div className="max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {videos.map((video) => (
             <Card key={video.id} className={`overflow-hidden cursor-pointer transition-all ${
