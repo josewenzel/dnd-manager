@@ -21,6 +21,12 @@ interface SavedParty {
   players: Player[]
 }
 
+interface SavedEncounter {
+  id: string
+  name: string
+  monsters: EncounterMonster[]
+}
+
 interface EncounterMonster {
   id: string
   name: string
@@ -108,6 +114,9 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
   const [savedParties, setSavedParties] = useState<SavedParty[]>([])
   const [partyNameInput, setPartyNameInput] = useState("")
   const [showSavedParties, setShowSavedParties] = useState(false)
+  const [savedEncounters, setSavedEncounters] = useState<SavedEncounter[]>([])
+  const [encounterNameInput, setEncounterNameInput] = useState("")
+  const [showSavedEncounters, setShowSavedEncounters] = useState(false)
   const [showCombatSetup, setShowCombatSetup] = useState(false)
   const [combatSetup, setCombatSetup] = useState<{
     players: Array<{ id: string; name: string; initiative: string }>
@@ -124,6 +133,16 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
         console.error("Failed to parse saved parties cookie:", e)
       }
     }
+
+    const encountersCookie = Cookies.get("dnd-saved-encounters")
+    if (encountersCookie) {
+      try {
+        const parsed = JSON.parse(encountersCookie)
+        setSavedEncounters(parsed)
+      } catch (e) {
+        console.error("Failed to parse saved encounters cookie:", e)
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -133,6 +152,14 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
       Cookies.remove("dnd-saved-parties")
     }
   }, [savedParties])
+
+  useEffect(() => {
+    if (savedEncounters.length > 0) {
+      Cookies.set("dnd-saved-encounters", JSON.stringify(savedEncounters), { expires: 365 })
+    } else {
+      Cookies.remove("dnd-saved-encounters")
+    }
+  }, [savedEncounters])
 
   const handleAddPlayer = () => {
     if (!nameInput.trim()) {
@@ -196,6 +223,38 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
   const handleDeleteParty = (id: string) => {
     const updated = savedParties.filter((p) => p.id !== id)
     setSavedParties(updated)
+  }
+
+  const handleSaveEncounter = () => {
+    if (!encounterNameInput.trim()) {
+      alert("Please enter an encounter name")
+      return
+    }
+    if (monsters.length === 0) {
+      alert("Add at least one monster to save the encounter")
+      return
+    }
+
+    const newEncounter: SavedEncounter = {
+      id: `encounter-${Date.now()}`,
+      name: encounterNameInput.trim(),
+      monsters: [...monsters],
+    }
+
+    const updated = [...savedEncounters, newEncounter]
+    setSavedEncounters(updated)
+    setEncounterNameInput("")
+    alert(`Encounter "${newEncounter.name}" saved!`)
+  }
+
+  const handleLoadEncounter = (encounter: SavedEncounter) => {
+    setMonsters([...encounter.monsters])
+    setShowSavedEncounters(false)
+  }
+
+  const handleDeleteEncounter = (id: string) => {
+    const updated = savedEncounters.filter((e) => e.id !== id)
+    setSavedEncounters(updated)
   }
 
   const handleAddMonster = (monsterName: string) => {
@@ -471,6 +530,56 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
           </div>
         )}
 
+        {showSavedEncounters && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-lg font-semibold">Saved Encounters</h3>
+                <button
+                  onClick={() => setShowSavedEncounters(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-4 max-h-96 overflow-y-auto">
+                {savedEncounters.length === 0 ? (
+                  <div className="text-center text-gray-400 py-8">
+                    <p className="text-sm">No saved encounters yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {savedEncounters.map((encounter) => (
+                      <div
+                        key={encounter.id}
+                        className="flex items-center justify-between p-3 rounded border border-gray-200 bg-gray-50 hover:bg-gray-100"
+                      >
+                        <button
+                          onClick={() => handleLoadEncounter(encounter)}
+                          className="flex-1 text-left"
+                        >
+                          <div className="text-sm font-medium">{encounter.name}</div>
+                          <div className="text-xs text-gray-500">
+                            {encounter.monsters.reduce((sum, m) => sum + m.count, 0)} monster{encounter.monsters.reduce((sum, m) => sum + m.count, 0) !== 1 ? "s" : ""}
+                          </div>
+                        </button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleDeleteEncounter(encounter.id)}
+                          className="px-2 h-7 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 size={12} />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {showCombatSetup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
@@ -694,7 +803,17 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Monsters</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Monsters</CardTitle>
+                  <Button
+                    onClick={() => setShowSavedEncounters(true)}
+                    size="sm"
+                    variant="outline"
+                    className="px-3"
+                  >
+                    <FolderOpen size={16} />
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="relative">
@@ -751,42 +870,60 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                 </div>
 
                 {monsters.length > 0 && (
-                  <div className="space-y-2 pt-2">
-                    {monsters.map((monster) => (
-                      <div
-                        key={monster.id}
-                        className="flex items-center justify-between p-3 rounded-md border border-card-border bg-card-bg group"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <a
-                              href={getMonsterUrl(monster.name)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm font-medium hover:text-blue-600 hover:underline flex items-center gap-1"
-                            >
-                              {monster.name}
-                              <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </a>
-                            <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
-                              CR {monster.cr}
-                            </span>
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Count: {monster.count} × {XP_BY_CR[monster.cr] || 0} XP = {(XP_BY_CR[monster.cr] || 0) * monster.count} XP
-                          </div>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeleteMonster(monster.id)}
-                          className="px-2 text-red-600 hover:text-red-700"
+                  <>
+                    <div className="space-y-2 pt-2">
+                      {monsters.map((monster) => (
+                        <div
+                          key={monster.id}
+                          className="flex items-center justify-between p-3 rounded-md border border-card-border bg-card-bg group"
                         >
-                          <Trash2 size={14} />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={getMonsterUrl(monster.name)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium hover:text-blue-600 hover:underline flex items-center gap-1"
+                              >
+                                {monster.name}
+                                <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </a>
+                              <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
+                                CR {monster.cr}
+                              </span>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              Count: {monster.count} × {XP_BY_CR[monster.cr] || 0} XP = {(XP_BY_CR[monster.cr] || 0) * monster.count} XP
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleDeleteMonster(monster.id)}
+                            className="px-2 text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-2 border-t">
+                      <div className="flex gap-2">
+                        <Input
+                          type="text"
+                          placeholder="Encounter name"
+                          value={encounterNameInput}
+                          onChange={(e) => setEncounterNameInput(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleSaveEncounter()}
+                          className="flex-1"
+                        />
+                        <Button onClick={handleSaveEncounter} size="sm" className="px-3">
+                          <Save size={16} />
                         </Button>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  </>
                 )}
 
                 {monsters.length === 0 && (
