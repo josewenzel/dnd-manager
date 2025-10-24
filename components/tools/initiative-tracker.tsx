@@ -83,7 +83,7 @@ export function InitiativeTracker() {
   }
 
   const handleClearAll = () => {
-    if (combatants.length > 0 && confirm("Clear all combatants?")) {
+    if (combatants.length > 0 && confirm("End combatant?")) {
       setCombatants([])
     }
   }
@@ -205,12 +205,6 @@ export function InitiativeTracker() {
     <div className="flex-1 p-8 overflow-auto bg-white">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-black">Initiative Tracker</h2>
-          {combatants.length > 0 && (
-            <Button variant="destructive" onClick={handleClearAll} className="gap-2">
-              <Trash2 size={16} />
-              Clear All
-            </Button>
-          )}
       </div>
 
       <div className="max-w-6xl">
@@ -331,7 +325,15 @@ export function InitiativeTracker() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Combat Order</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Combat Order</CardTitle>
+                  {combatants.length > 0 && (
+                    <Button variant="destructive" onClick={handleClearAll} className="gap-2">
+                      <Trash2 size={16} />
+                      End Combat
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {combatants.length === 0 ? (
@@ -366,13 +368,13 @@ export function InitiativeTracker() {
                               </div>
                             )}
                             {!hasInitiativeClash(index) && <div className="w-6 shrink-0" />}
-                            <div className="relative">
+                            <div className="relative -ml-2">
                               <button
                                 onClick={() => setShowColorPicker(showColorPicker === combatant.id ? null : combatant.id)}
                                 className="flex items-center justify-center w-12 h-12 rounded-full text-white font-bold text-lg shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
                                 style={{ backgroundColor: combatant.color || "#1f2937" }}
                               >
-                                {combatant.initiative}
+                                <span className="text-center leading-none">{combatant.initiative}</span>
                               </button>
                               {showColorPicker === combatant.id && (
                                 <>
