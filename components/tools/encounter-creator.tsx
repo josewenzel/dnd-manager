@@ -4,9 +4,10 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen } from "lucide-react"
+import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen, Swords } from "lucide-react"
 import { MONSTERS } from "@/lib/monsters-data"
 import Cookies from "js-cookie"
+import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 
 interface Player {
   id: string
@@ -91,7 +92,12 @@ const XP_THRESHOLDS_BY_LEVEL: Record<number, DifficultyThreshold> = {
   20: { easy: 2800, medium: 5700, hard: 8500, deadly: 12700 },
 }
 
-export function EncounterCreator() {
+interface EncounterCreatorProps {
+  setActiveTool: (tool: string) => void
+}
+
+export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
+  const { startCombat } = useInitiativeContext()
   const [players, setPlayers] = useState<Player[]>([])
   const [nameInput, setNameInput] = useState("")
   const [levelInput, setLevelInput] = useState("")
@@ -102,6 +108,11 @@ export function EncounterCreator() {
   const [savedParties, setSavedParties] = useState<SavedParty[]>([])
   const [partyNameInput, setPartyNameInput] = useState("")
   const [showSavedParties, setShowSavedParties] = useState(false)
+  const [showCombatSetup, setShowCombatSetup] = useState(false)
+  const [combatSetup, setCombatSetup] = useState<{
+    players: Array<{ id: string; name: string; initiative: string }>
+    monsters: Array<{ id: string; name: string; initiative: string; hp: string; maxHp: number }>
+  }>({ players: [], monsters: [] })
 
   useEffect(() => {
     const savedCookie = Cookies.get("dnd-saved-parties")
@@ -321,6 +332,88 @@ export function EncounterCreator() {
     }
   }
 
+  const handleOpenCombatSetup = () => {
+    const setupPlayers = players.map(player => ({
+      id: player.id,
+      name: player.name,
+      initiative: "",
+      hp: ""
+    }))
+
+    const setupMonsters = monsters.flatMap((monster) => {
+      const monsterData = MONSTERS.find(m => m.name === monster.name)
+      const baseHp = monsterData ? Math.floor(Math.random() * 20) + (monster.cr * 10) : 50
+      
+      return Array.from({ length: monster.count }, (_, i) => ({
+        id: `monster-${monster.name}-${Date.now()}-${i}`,
+        name: monster.count > 1 ? `${monster.name} #${i + 1}` : monster.name,
+        initiative: "",
+        hp: baseHp.toString(),
+        maxHp: baseHp
+      }))
+    })
+
+    setCombatSetup({ players: setupPlayers, monsters: setupMonsters })
+    setShowCombatSetup(true)
+  }
+
+  const handleStartCombat = () => {
+    const playerCombatants: Combatant[] = combatSetup.players
+      .filter(p => p.initiative.trim() !== "")
+      .map(player => ({
+        id: player.id,
+        name: player.name,
+        initiative: parseInt(player.initiative) || 0,
+        type: "player" as const,
+        color: "#1f2937",
+      }))
+
+    const monsterCombatants: Combatant[] = combatSetup.monsters
+      .filter(m => m.initiative.trim() !== "")
+      .map(monster => ({
+        id: monster.id,
+        name: monster.name,
+        initiative: parseInt(monster.initiative) || 0,
+        type: "monster" as const,
+        color: "#ef4444",
+        currentHp: parseInt(monster.hp) || monster.maxHp,
+        maxHp: monster.maxHp,
+      }))
+
+    const allCombatants = [...playerCombatants, ...monsterCombatants]
+    
+    if (allCombatants.length === 0) {
+      alert("Please set initiative for at least one combatant")
+      return
+    }
+
+    startCombat(allCombatants, () => setActiveTool("initiative"))
+    setShowCombatSetup(false)
+  }
+
+  const handleUpdatePlayerInitiative = (id: string, value: string) => {
+    setCombatSetup(prev => ({
+      ...prev,
+      players: prev.players.map(p => p.id === id ? { ...p, initiative: value } : p)
+    }))
+  }
+
+  const handleUpdateMonsterInitiative = (id: string, value: string) => {
+    setCombatSetup(prev => ({
+      ...prev,
+      monsters: prev.monsters.map(m => m.id === id ? { ...m, initiative: value } : m)
+    }))
+  }
+
+  const handleUpdateMonsterHp = (id: string, value: string) => {
+    setCombatSetup(prev => ({
+      ...prev,
+      monsters: prev.monsters.map(m => m.id === id ? { ...m, hp: value } : m)
+    }))
+  }
+
+  const canStartCombat = players.length > 0 && monsters.length > 0
+
   return (
     <div className="flex-1 p-8 overflow-auto bg-white">
       <div className="max-w-6xl mx-auto">
@@ -373,6 +466,106 @@ export function EncounterCreator() {
                     ))}
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showCombatSetup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
+              <div className="flex items-center justify-between p-4 border-b shrink-0">
+                <h3 className="text-lg font-semibold">Combat Setup</h3>
+                <button
+                  onClick={() => setShowCombatSetup(false)}
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto flex-1">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
+                      <User size={18} className="text-player-icon" />
+                      Players
+                    </h4>
+                    {combatSetup.players.length === 0 ? (
+                      <div className="text-center text-gray-400 py-8">
+                        <p className="text-sm">No players in party</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {combatSetup.players.map((player) => (
+                          <div key={player.id} className="p-3 border border-gray-200 rounded-md bg-gray-50">
+                            <div className="font-medium mb-2">{player.name}</div>
+                            <div>
+                              <label className="text-xs text-gray-600 mb-1 block">Initiative</label>
+                              <Input
+                                type="number"
+                                placeholder="Roll initiative"
+                                value={player.initiative}
+                                onChange={(e) => handleUpdatePlayerInitiative(player.id, e.target.value)}
+                                className="h-9"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
+                      <Swords size={18} className="text-monster" />
+                      Monsters
+                    </h4>
+                    {combatSetup.monsters.length === 0 ? (
+                      <div className="text-center text-gray-400 py-8">
+                        <p className="text-sm">No monsters in encounter</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {combatSetup.monsters.map((monster) => (
+                          <div key={monster.id} className="p-3 border border-gray-200 rounded-md bg-red-50">
+                            <div className="font-medium mb-2">{monster.name}</div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-xs text-gray-600 mb-1 block">Initiative</label>
+                                <Input
+                                  type="number"
+                                  placeholder="Roll"
+                                  value={monster.initiative}
+                                  onChange={(e) => handleUpdateMonsterInitiative(monster.id, e.target.value)}
+                                  className="h-9"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-xs text-gray-600 mb-1 block">Hit Points</label>
+                                <Input
+                                  type="number"
+                                  placeholder="HP"
+                                  value={monster.hp}
+                                  onChange={(e) => handleUpdateMonsterHp(monster.id, e.target.value)}
+                                  className="h-9"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-end gap-3 p-4 border-t shrink-0">
+                <Button variant="outline" onClick={() => setShowCombatSetup(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleStartCombat} className="gap-2">
+                  <Swords size={16} />
+                  Start Combat
+                </Button>
               </div>
             </div>
           </div>
@@ -608,7 +801,15 @@ export function EncounterCreator() {
           <div className="lg:col-span-2">
             <Card className="h-full">
               <CardHeader>
-                <CardTitle className="text-lg">Encounter Analysis</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Encounter Analysis</CardTitle>
+                  {canStartCombat && (
+                    <Button onClick={handleOpenCombatSetup} className="gap-2">
+                      <Swords size={16} />
+                      Start Combat
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {players.length === 0 || monsters.length === 0 ? (

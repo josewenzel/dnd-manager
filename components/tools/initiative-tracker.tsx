@@ -5,17 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Trash2, Swords, User, Minus, Heart, X, ChevronUp, ChevronDown, Shield } from "lucide-react"
-
-interface Combatant {
-  id: string
-  name: string
-  initiative: number
-  type: "player" | "monster" | "ally"
-  currentHp?: number
-  maxHp?: number
-  statuses?: string[]
-  color?: string
-}
+import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 
 const DND_CONDITIONS: Record<string, string> = {
   "Blinded": "Can't see, auto-fails sight checks. Attacks vs. have advantage, its attacks have disadvantage.",
@@ -36,7 +26,7 @@ const DND_CONDITIONS: Record<string, string> = {
 }
 
 export function InitiativeTracker() {
-  const [combatants, setCombatants] = useState<Combatant[]>([])
+  const { combatants, setCombatants } = useInitiativeContext()
   const [nameInput, setNameInput] = useState("")
   const [initiativeInput, setInitiativeInput] = useState("")
   const [typeInput, setTypeInput] = useState<"player" | "monster" | "ally">("player")
