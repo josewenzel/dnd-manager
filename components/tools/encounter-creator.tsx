@@ -481,8 +481,14 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
       <div className="max-w-6xl">
         {showSavedParties && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => setShowSavedParties(false)}
+          >
+            <div 
+              className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between p-4 border-b">
                 <h3 className="text-lg font-semibold">Saved Parties</h3>
                 <button
@@ -531,8 +537,14 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
         )}
 
         {showSavedEncounters && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => setShowSavedEncounters(false)}
+          >
+            <div 
+              className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between p-4 border-b">
                 <h3 className="text-lg font-semibold">Saved Encounters</h3>
                 <button
@@ -581,8 +593,14 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
         )}
 
         {showCombatSetup && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => setShowCombatSetup(false)}
+          >
+            <div 
+              className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between p-4 border-b shrink-0">
                 <h3 className="text-lg font-semibold">Combat Setup</h3>
                 <button
