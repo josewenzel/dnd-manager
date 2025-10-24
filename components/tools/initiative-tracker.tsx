@@ -445,7 +445,7 @@ export function InitiativeTracker() {
                       type="button"
                       variant="outline"
                       onClick={() => setTypeInput("player")}
-                      className={typeInput === "player" ? "border-2 border-player-icon bg-gray-100" : ""}
+                      className={`justify-center ${typeInput === "player" ? "border-2 border-player-icon bg-gray-100" : ""}`}
                     >
                       Player
                     </Button>
@@ -453,7 +453,7 @@ export function InitiativeTracker() {
                       type="button"
                       variant="outline"
                       onClick={() => setTypeInput("ally")}
-                      className={typeInput === "ally" ? "border-2 border-ally bg-ally-light" : ""}
+                      className={`justify-center ${typeInput === "ally" ? "border-2 border-ally bg-ally-light" : ""}`}
                     >
                       Ally
                     </Button>
@@ -461,7 +461,7 @@ export function InitiativeTracker() {
                       type="button"
                       variant="outline"
                       onClick={() => setTypeInput("monster")}
-                      className={typeInput === "monster" ? "border-2 border-monster bg-monster-light" : ""}
+                      className={`justify-center ${typeInput === "monster" ? "border-2 border-monster bg-monster-light" : ""}`}
                     >
                       Monster
                     </Button>
