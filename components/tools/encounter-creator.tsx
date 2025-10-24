@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Modal, ModalHeader, ModalContent } from "@/components/ui/modal"
 import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen, Swords } from "lucide-react"
 import { MONSTERS } from "@/lib/monsters-data"
 import Cookies from "js-cookie"
@@ -480,223 +481,177 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
       </div>
 
       <div className="max-w-6xl">
-        {showSavedParties && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setShowSavedParties(false)}
-          >
-            <div 
-              className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b">
-                <h3 className="text-lg font-semibold">Saved Parties</h3>
-                <button
-                  onClick={() => setShowSavedParties(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ×
-                </button>
+        <Modal isOpen={showSavedParties} onClose={() => setShowSavedParties(false)}>
+          <ModalHeader onClose={() => setShowSavedParties(false)}>
+            Saved Parties
+          </ModalHeader>
+          <ModalContent className="p-4 max-h-96 overflow-y-auto">
+            {savedParties.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">
+                <p className="text-sm">No saved parties yet</p>
               </div>
-              <div className="p-4 max-h-96 overflow-y-auto">
-                {savedParties.length === 0 ? (
-                  <div className="text-center text-gray-400 py-8">
-                    <p className="text-sm">No saved parties yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {savedParties.map((party) => (
-                      <div
-                        key={party.id}
-                        className="flex items-center justify-between p-3 rounded border border-gray-200 bg-gray-50 hover:bg-gray-100"
-                      >
-                        <button
-                          onClick={() => handleLoadParty(party)}
-                          className="flex-1 text-left"
-                        >
-                          <div className="text-sm font-medium">{party.name}</div>
-                          <div className="text-xs text-gray-500">
-                            {party.players.length} player{party.players.length !== 1 ? "s" : ""}
-                          </div>
-                        </button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeleteParty(party.id)}
-                          className="px-2 h-7 text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 size={12} />
-                        </Button>
+            ) : (
+              <div className="space-y-2">
+                {savedParties.map((party) => (
+                  <div
+                    key={party.id}
+                    className="flex items-center justify-between p-3 rounded border border-gray-200 bg-gray-50 hover:bg-gray-100"
+                  >
+                    <button
+                      onClick={() => handleLoadParty(party)}
+                      className="flex-1 text-left"
+                    >
+                      <div className="text-sm font-medium">{party.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {party.players.length} player{party.players.length !== 1 ? "s" : ""}
                       </div>
-                    ))}
+                    </button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDeleteParty(party.id)}
+                      className="px-2 h-7 text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 size={12} />
+                    </Button>
                   </div>
-                )}
+                ))}
               </div>
-            </div>
-          </div>
-        )}
+            )}
+          </ModalContent>
+        </Modal>
 
-        {showSavedEncounters && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setShowSavedEncounters(false)}
-          >
-            <div 
-              className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b">
-                <h3 className="text-lg font-semibold">Saved Encounters</h3>
-                <button
-                  onClick={() => setShowSavedEncounters(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ×
-                </button>
+        <Modal isOpen={showSavedEncounters} onClose={() => setShowSavedEncounters(false)}>
+          <ModalHeader onClose={() => setShowSavedEncounters(false)}>
+            Saved Encounters
+          </ModalHeader>
+          <ModalContent className="p-4 max-h-96 overflow-y-auto">
+            {savedEncounters.length === 0 ? (
+              <div className="text-center text-gray-400 py-8">
+                <p className="text-sm">No saved encounters yet</p>
               </div>
-              <div className="p-4 max-h-96 overflow-y-auto">
-                {savedEncounters.length === 0 ? (
-                  <div className="text-center text-gray-400 py-8">
-                    <p className="text-sm">No saved encounters yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {savedEncounters.map((encounter) => (
-                      <div
-                        key={encounter.id}
-                        className="flex items-center justify-between p-3 rounded border border-gray-200 bg-gray-50 hover:bg-gray-100"
-                      >
-                        <button
-                          onClick={() => handleLoadEncounter(encounter)}
-                          className="flex-1 text-left"
-                        >
-                          <div className="text-sm font-medium">{encounter.name}</div>
-                          <div className="text-xs text-gray-500">
-                            {encounter.monsters.reduce((sum, m) => sum + m.count, 0)} monster{encounter.monsters.reduce((sum, m) => sum + m.count, 0) !== 1 ? "s" : ""}
-                          </div>
-                        </button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleDeleteEncounter(encounter.id)}
-                          className="px-2 h-7 text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 size={12} />
-                        </Button>
+            ) : (
+              <div className="space-y-2">
+                {savedEncounters.map((encounter) => (
+                  <div
+                    key={encounter.id}
+                    className="flex items-center justify-between p-3 rounded border border-gray-200 bg-gray-50 hover:bg-gray-100"
+                  >
+                    <button
+                      onClick={() => handleLoadEncounter(encounter)}
+                      className="flex-1 text-left"
+                    >
+                      <div className="text-sm font-medium">{encounter.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {encounter.monsters.reduce((sum, m) => sum + m.count, 0)} monster{encounter.monsters.reduce((sum, m) => sum + m.count, 0) !== 1 ? "s" : ""}
                       </div>
-                    ))}
+                    </button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDeleteEncounter(encounter.id)}
+                      className="px-2 h-7 text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 size={12} />
+                    </Button>
                   </div>
-                )}
+                ))}
               </div>
-            </div>
-          </div>
-        )}
+            )}
+          </ModalContent>
+        </Modal>
 
-        {showCombatSetup && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-            onClick={() => setShowCombatSetup(false)}
-          >
-            <div 
-              className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between p-4 border-b shrink-0">
-                <h3 className="text-lg font-semibold">Combat Setup</h3>
-                <button
-                  onClick={() => setShowCombatSetup(false)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="p-6 overflow-y-auto flex-1">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
-                      <User size={18} className="text-player-icon" />
-                      Players
-                    </h4>
-                    {combatSetup.players.length === 0 ? (
-                      <div className="text-center text-gray-400 py-8">
-                        <p className="text-sm">No players in party</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {combatSetup.players.map((player) => (
-                          <div key={player.id} className="p-3 border border-gray-200 rounded-md bg-gray-50">
-                            <div className="font-medium mb-2">{player.name}</div>
+        <Modal isOpen={showCombatSetup} onClose={() => setShowCombatSetup(false)} maxWidth="4xl">
+          <div className="max-h-[90vh] flex flex-col">
+            <ModalHeader onClose={() => setShowCombatSetup(false)}>
+              Combat Setup
+            </ModalHeader>
+            <ModalContent className="p-6 overflow-y-auto flex-1">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
+                    <User size={18} className="text-player-icon" />
+                    Players
+                  </h4>
+                  {combatSetup.players.length === 0 ? (
+                    <div className="text-center text-gray-400 py-8">
+                      <p className="text-sm">No players in party</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {combatSetup.players.map((player) => (
+                        <div key={player.id} className="p-3 border border-gray-200 rounded-md bg-gray-50">
+                          <div className="font-medium mb-2">{player.name}</div>
+                          <div>
+                            <label className="text-xs text-gray-600 mb-1 block">Initiative</label>
+                            <Input
+                              type="number"
+                              placeholder="Roll initiative"
+                              value={player.initiative}
+                              onChange={(e) => handleUpdatePlayerInitiative(player.id, e.target.value)}
+                              className="h-9"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
+                    <Swords size={18} className="text-monster" />
+                    Monsters
+                  </h4>
+                  {combatSetup.monsters.length === 0 ? (
+                    <div className="text-center text-gray-400 py-8">
+                      <p className="text-sm">No monsters in encounter</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {combatSetup.monsters.map((monster) => (
+                        <div key={monster.id} className="p-3 border border-gray-200 rounded-md bg-red-50">
+                          <div className="font-medium mb-2">{monster.name}</div>
+                          <div className="grid grid-cols-2 gap-2">
                             <div>
                               <label className="text-xs text-gray-600 mb-1 block">Initiative</label>
                               <Input
                                 type="number"
-                                placeholder="Roll initiative"
-                                value={player.initiative}
-                                onChange={(e) => handleUpdatePlayerInitiative(player.id, e.target.value)}
+                                placeholder="Roll"
+                                value={monster.initiative}
+                                onChange={(e) => handleUpdateMonsterInitiative(monster.id, e.target.value)}
+                                className="h-9"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs text-gray-600 mb-1 block">Hit Points</label>
+                              <Input
+                                type="number"
+                                placeholder="HP"
+                                value={monster.hp}
+                                onChange={(e) => handleUpdateMonsterHp(monster.id, e.target.value)}
                                 className="h-9"
                               />
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
-                      <Swords size={18} className="text-monster" />
-                      Monsters
-                    </h4>
-                    {combatSetup.monsters.length === 0 ? (
-                      <div className="text-center text-gray-400 py-8">
-                        <p className="text-sm">No monsters in encounter</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        {combatSetup.monsters.map((monster) => (
-                          <div key={monster.id} className="p-3 border border-gray-200 rounded-md bg-red-50">
-                            <div className="font-medium mb-2">{monster.name}</div>
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <label className="text-xs text-gray-600 mb-1 block">Initiative</label>
-                                <Input
-                                  type="number"
-                                  placeholder="Roll"
-                                  value={monster.initiative}
-                                  onChange={(e) => handleUpdateMonsterInitiative(monster.id, e.target.value)}
-                                  className="h-9"
-                                />
-                              </div>
-                              <div>
-                                <label className="text-xs text-gray-600 mb-1 block">Hit Points</label>
-                                <Input
-                                  type="number"
-                                  placeholder="HP"
-                                  value={monster.hp}
-                                  onChange={(e) => handleUpdateMonsterHp(monster.id, e.target.value)}
-                                  className="h-9"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center justify-end gap-3 p-4 border-t shrink-0">
-                <Button variant="outline" onClick={() => setShowCombatSetup(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleStartCombat} className="gap-2">
-                  <Swords size={16} />
-                  Start Combat
-                </Button>
-              </div>
+            </ModalContent>
+            <div className="flex items-center justify-end gap-3 p-4 border-t shrink-0">
+              <Button variant="outline" onClick={() => setShowCombatSetup(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleStartCombat} className="gap-2">
+                <Swords size={16} />
+                Start Combat
+              </Button>
             </div>
           </div>
-        )}
+        </Modal>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="space-y-6">
