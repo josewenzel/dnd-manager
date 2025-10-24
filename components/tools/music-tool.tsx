@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Play, Trash2, Plus } from "lucide-react"
+import { Play, Trash2, Plus, Info } from "lucide-react"
 import Image from "next/image"
 import { useMusicContext } from "@/contexts/music-context"
 
@@ -13,6 +13,7 @@ export function MusicTool() {
   const [urlInput, setUrlInput] = useState("")
   const [titleInput, setTitleInput] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
+  const [showInfoModal, setShowInfoModal] = useState(false)
 
   const extractYouTubeId = (url: string): string | null => {
     try {
@@ -67,7 +68,50 @@ export function MusicTool() {
 
   return (
     <div className="flex-1 p-8 overflow-auto bg-white">
-      <h2 className="text-3xl font-bold mb-8 text-black">Music Player</h2>
+      <div className="flex items-center gap-2 mb-8">
+        <h2 className="text-3xl font-bold text-black leading-none">Music Player</h2>
+        <button
+          onClick={() => setShowInfoModal(true)}
+          className="text-gray-600 hover:text-gray-900 transition-colors mt-0.5"
+        >
+          <Info size={20} />
+        </button>
+      </div>
+
+      {showInfoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <h3 className="text-xl font-bold mb-4">Music Recommendations</h3>
+              <div className="space-y-4 text-sm text-gray-700">
+                <p>
+                  Looking for great D&D ambient music and soundscapes? Check out the{" "}
+                  <a
+                    href="https://www.youtube.com/@bardify"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    Bardify YouTube channel
+                  </a>
+                  !
+                </p>
+                <p>
+                  They create amazing ambient music perfect for D&D sessions. Consider subscribing to support their work.
+                </p>
+                <p className="text-xs text-gray-500 italic">
+                  Note: We are not affiliated with Bardify. This is simply a recommendation for quality content.
+                </p>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <Button onClick={() => setShowInfoModal(false)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

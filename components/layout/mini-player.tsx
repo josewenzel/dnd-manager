@@ -26,7 +26,7 @@ export function MiniPlayer() {
           size="sm"
           variant="ghost"
           onClick={() => setCurrentVideoId(null)}
-          className="h-6 w-6 p-0 flex-shrink-0 min-w-6"
+          className="h-6 w-6 p-0 flex-shrink-0 min-w-6 flex items-center justify-center"
         >
           <X size={14} className="flex-shrink-0" />
         </Button>
