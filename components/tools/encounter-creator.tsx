@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Modal, ModalHeader, ModalContent } from "@/components/ui/modal"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen, Swords } from "lucide-react"
 import { MONSTERS } from "@/lib/monsters-data"
 import Cookies from "js-cookie"
@@ -487,9 +488,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
           </ModalHeader>
           <ModalContent className="p-4 max-h-96 overflow-y-auto">
             {savedParties.length === 0 ? (
-              <div className="text-center text-gray-400 py-8">
-                <p className="text-sm">No saved parties yet</p>
-              </div>
+              <EmptyState message="No saved parties yet" />
             ) : (
               <div className="space-y-2">
                 {savedParties.map((party) => (
@@ -527,9 +526,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
           </ModalHeader>
           <ModalContent className="p-4 max-h-96 overflow-y-auto">
             {savedEncounters.length === 0 ? (
-              <div className="text-center text-gray-400 py-8">
-                <p className="text-sm">No saved encounters yet</p>
-              </div>
+              <EmptyState message="No saved encounters yet" />
             ) : (
               <div className="space-y-2">
                 {savedEncounters.map((encounter) => (
@@ -574,9 +571,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                     Players
                   </h4>
                   {combatSetup.players.length === 0 ? (
-                    <div className="text-center text-gray-400 py-8">
-                      <p className="text-sm">No players in party</p>
-                    </div>
+                    <EmptyState message="No players in party" />
                   ) : (
                     <div className="space-y-3">
                       {combatSetup.players.map((player) => (
@@ -604,9 +599,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                     Monsters
                   </h4>
                   {combatSetup.monsters.length === 0 ? (
-                    <div className="text-center text-gray-400 py-8">
-                      <p className="text-sm">No monsters in encounter</p>
-                    </div>
+                    <EmptyState message="No monsters in encounter" />
                   ) : (
                     <div className="space-y-3">
                       {combatSetup.monsters.map((monster) => (
@@ -767,9 +760,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                 )}
 
                 {players.length === 0 && (
-                  <div className="text-center text-gray-400 py-6">
-                    <p className="text-sm">Add players to your party</p>
-                  </div>
+                  <EmptyState message="Add players to your party" className="py-6" />
                 )}
               </CardContent>
             </Card>
@@ -900,9 +891,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                 )}
 
                 {monsters.length === 0 && (
-                  <div className="text-center text-gray-400 py-6">
-                    <p className="text-sm">Add monsters to the encounter</p>
-                  </div>
+                  <EmptyState message="Add monsters to the encounter" className="py-6" />
                 )}
               </CardContent>
             </Card>
@@ -923,9 +912,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
               </CardHeader>
               <CardContent className="space-y-6">
                 {players.length === 0 || monsters.length === 0 ? (
-                  <div className="text-center text-gray-400 py-12">
-                    <p>Add players and monsters to see encounter analysis</p>
-                  </div>
+                  <EmptyState message="Add players and monsters to see encounter analysis" className="py-12" />
                 ) : (
                   <>
                     <div className="text-center">

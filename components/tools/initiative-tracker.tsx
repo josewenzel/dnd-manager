@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Plus, Trash2, Swords, User, Minus, Heart, X, ChevronUp, ChevronDown, Shield } from "lucide-react"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 
@@ -83,7 +84,7 @@ export function InitiativeTracker() {
   }
 
   const handleClearAll = () => {
-    if (combatants.length > 0 && confirm("End combatant?")) {
+    if (combatants.length > 0 && confirm("End combat?")) {
       setCombatants([])
     }
   }
@@ -337,9 +338,7 @@ export function InitiativeTracker() {
               </CardHeader>
               <CardContent>
                 {combatants.length === 0 ? (
-                  <div className="text-center text-gray-400 py-12">
-                    <p>No combatants added yet</p>
-                  </div>
+                  <EmptyState message="No combatants added yet" className="py-12" />
                 ) : (
                   <div className="space-y-2">
                     {combatants.map((combatant, index) => (
