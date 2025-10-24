@@ -99,7 +99,7 @@ export function MusicTool() {
               They create amazing ambient music perfect for D&D sessions. Consider subscribing to support their work.
             </p>
             <p className="text-xs text-gray-500 italic">
-              Note: We are not affiliated with Bardify. This is simply a recommendation for quality content.
+              Note: We are not Bardify. This is simply a recommendation for quality content.
             </p>
           </div>
           <div className="mt-6 flex justify-end">
@@ -178,8 +178,8 @@ export function MusicTool() {
                     <Plus size={14} />
                     Add
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setShowAddForm(false)
                       setTitleInput("")
