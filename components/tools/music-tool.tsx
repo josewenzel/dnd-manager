@@ -100,7 +100,7 @@ export function MusicTool() {
                   </Button>
                 </div>
               </div>
-              <CardContent className="p-4">
+              <CardContent className="p-4 pt-5">
                 <h3 className="font-medium text-sm truncate">{video.title}</h3>
               </CardContent>
             </Card>
