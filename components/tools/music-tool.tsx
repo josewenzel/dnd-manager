@@ -68,9 +68,9 @@ export function MusicTool() {
   }
 
   return (
-    <div className="flex-1 p-8 overflow-auto bg-white">
-      <div className="flex items-center gap-2 mb-8">
-        <h2 className="text-3xl font-bold text-black leading-none">Music Player</h2>
+    <div className="flex-1 p-4 md:p-8 overflow-auto bg-white">
+      <div className="flex items-center gap-2 mb-4 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-black leading-none">Music Player</h2>
         <button
           onClick={() => setShowInfoModal(true)}
           className="text-gray-600 hover:text-gray-900 transition-colors mt-0.5"
@@ -111,7 +111,7 @@ export function MusicTool() {
       </Modal>
 
       <div className="max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {videos.map((video) => (
             <Card key={video.id} className={`overflow-hidden cursor-pointer transition-all ${
               currentVideoId === video.id ? "ring-2 ring-black" : ""
@@ -195,7 +195,7 @@ export function MusicTool() {
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="border-2 border-dashed border-card-border bg-card-bg hover:bg-card-hover hover:border-gray-400 rounded-lg transition-all min-h-[240px] flex items-center justify-center group"
+              className="border-2 border-dashed border-card-border bg-card-bg hover:bg-card-hover hover:border-gray-400 rounded-lg transition-all h-full flex items-center justify-center group"
             >
               <div className="text-center">
                 <Plus size={48} className="mx-auto text-gray-400 group-hover:text-gray-600 transition-colors mb-2" />

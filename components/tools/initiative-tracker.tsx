@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Plus, Trash2, Swords, User, Minus, Heart, X, ChevronUp, ChevronDown, Shield } from "lucide-react"
+import { Plus, Trash2, Swords, User, Minus, Heart, X, Shield, ArrowUpDown } from "lucide-react"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 
 const DND_CONDITIONS: Record<string, string> = {
@@ -140,15 +140,6 @@ export function InitiativeTracker() {
     )
   }
 
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return
-    const newCombatants = [...combatants]
-    const temp = newCombatants[index]
-    newCombatants[index] = newCombatants[index - 1]
-    newCombatants[index - 1] = temp
-    setCombatants(newCombatants)
-  }
-
   const handleMoveDown = (index: number) => {
     if (index === combatants.length - 1) return
     const newCombatants = [...combatants]
@@ -158,18 +149,9 @@ export function InitiativeTracker() {
     setCombatants(newCombatants)
   }
 
-  const canMoveUp = (index: number) => {
-    if (index === 0) return false
-    return combatants[index].initiative === combatants[index - 1].initiative
-  }
-
   const canMoveDown = (index: number) => {
     if (index === combatants.length - 1) return false
     return combatants[index].initiative === combatants[index + 1].initiative
-  }
-
-  const hasInitiativeClash = (index: number) => {
-    return canMoveUp(index) || canMoveDown(index)
   }
 
   const PRESET_COLORS = [
@@ -283,7 +265,7 @@ export function InitiativeTracker() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hidden lg:block">
               <CardHeader>
                 <CardTitle className="text-lg">Statistics</CardTitle>
               </CardHeader>
@@ -342,32 +324,13 @@ export function InitiativeTracker() {
                 ) : (
                   <div className="space-y-2">
                     {combatants.map((combatant, index) => (
-                      <div
-                        key={combatant.id}
-                        className="p-4 rounded-md border border-card-border bg-card-bg hover:bg-card-hover transition-colors"
-                      >
-                        <div className="flex items-start justify-between gap-4 mb-3">
-                          <div className="flex items-center gap-4">
-                            {hasInitiativeClash(index) && (
-                              <div className="flex flex-col gap-0.5 w-6 shrink-0">
-                              <button
-                                onClick={() => handleMoveUp(index)}
-                                disabled={!canMoveUp(index)}
-                                className="h-4 w-6 flex items-center justify-center rounded hover:bg-card-hover disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                <ChevronUp size={14} className="text-arrow hover:text-arrow-hover" />
-                              </button>
-                              <button
-                                onClick={() => handleMoveDown(index)}
-                                disabled={!canMoveDown(index)}
-                                className="h-4 w-6 flex items-center justify-center rounded hover:bg-card-hover disabled:opacity-30 disabled:cursor-not-allowed"
-                              >
-                                <ChevronDown size={14} className="text-arrow hover:text-arrow-hover" />
-                              </button>
-                              </div>
-                            )}
-                            {!hasInitiativeClash(index) && <div className="w-6 shrink-0" />}
-                            <div className="relative -ml-2">
+                      <div key={combatant.id}>
+                        <div
+                          className="p-4 rounded-md border border-card-border bg-card-bg hover:bg-card-hover transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-4 mb-3">
+                            <div className="flex items-center gap-4">
+                              <div className="relative md:-ml-2">
                               <button
                                 onClick={() => setShowColorPicker(showColorPicker === combatant.id ? null : combatant.id)}
                                 className="flex items-center justify-center w-12 h-12 rounded-full text-white font-bold text-lg shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
@@ -406,7 +369,7 @@ export function InitiativeTracker() {
                               )}
                               <span className="font-medium text-lg">{combatant.name}</span>
                             </div>
-                            <span className="text-xs text-gray-500 capitalize shrink-0">
+                            <span className="hidden md:block text-xs text-gray-500 capitalize shrink-0">
                               {combatant.type}
                             </span>
                           </div>
@@ -454,7 +417,7 @@ export function InitiativeTracker() {
                             </div>
                           </div>
                         )}
-                        <div className="ml-[88px] space-y-2">
+                        <div className="ml-0 md:ml-[88px] space-y-2">
                           {combatant.statuses && combatant.statuses.length > 0 && (
                             <div className="flex flex-wrap gap-1 mb-2">
                                {combatant.statuses.map((status) => (
@@ -487,7 +450,7 @@ export function InitiativeTracker() {
                                 onChange={(e) => handleStatusInputChange(combatant.id, e.target.value)}
                                 onKeyDown={(e) => e.key === "Enter" && handleAddStatus(combatant.id)}
                                 onBlur={() => setTimeout(() => setShowSuggestions({ ...showSuggestions, [combatant.id]: false }), 200)}
-                                className="h-8 text-sm"
+                                className="text-sm"
                               />
                               {showSuggestions[combatant.id] && statusInputs[combatant.id] && (
                                 <div className="absolute z-10 w-full mt-1 bg-white border border-input-border rounded-md shadow-lg max-h-60 overflow-y-auto">
@@ -510,16 +473,26 @@ export function InitiativeTracker() {
                               )}
                             </div>
                             <Button
-                              size="sm"
                               variant="outline"
                               onClick={() => handleAddStatus(combatant.id)}
-                              className="px-2 h-8"
+                              className="px-3 shrink-0"
                             >
                               <Plus size={14} />
                             </Button>
                           </div>
                         </div>
                       </div>
+                      {canMoveDown(index) && (
+                        <div className="flex justify-center py-2">
+                          <button
+                            onClick={() => handleMoveDown(index)}
+                            className="p-2 rounded-md border border-card-border bg-white hover:bg-card-hover transition-colors"
+                          >
+                            <ArrowUpDown size={16} className="text-gray-500 hover:text-gray-700" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     ))}
                   </div>
                 )}
