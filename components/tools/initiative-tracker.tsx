@@ -383,7 +383,7 @@ export function InitiativeTracker() {
                           </Button>
                         </div>
                         {(combatant.type === "monster" || combatant.type === "ally") && combatant.currentHp !== undefined && (
-                          <div className="flex items-center gap-2 mb-3 ml-[88px]">
+                          <div className="flex items-center gap-2 mb-3 ml-0 md:ml-[88px]">
                             <div className="flex items-center gap-1 px-3 py-1 rounded-md bg-hp-bg text-hp">
                               <Heart size={14} fill="currentColor" />
                               <span className="text-sm font-medium">
