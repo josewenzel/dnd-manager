@@ -23,9 +23,11 @@ export function MainApp() {
       <InitiativeProvider>
         <div className="flex h-screen bg-white">
           <Sidebar activeTool={activeTool} setActiveTool={handleToolChange} />
-          {activeTool === "music" && <MusicTool />}
-          {activeTool === "initiative" && <InitiativeTracker />}
-          {activeTool === "encounter" && <EncounterCreator setActiveTool={handleToolChange} />}
+          <div className="flex-1 pt-[72px] md:pt-0 overflow-auto">
+            {activeTool === "music" && <MusicTool />}
+            {activeTool === "initiative" && <InitiativeTracker />}
+            {activeTool === "encounter" && <EncounterCreator setActiveTool={handleToolChange} />}
+          </div>
           <MiniPlayer />
         </div>
       </InitiativeProvider>
