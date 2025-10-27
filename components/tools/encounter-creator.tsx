@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Modal, ModalHeader, ModalContent } from "@/components/ui/modal"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Plus, Trash2, User, ExternalLink, ChevronUp, ChevronDown, Save, FolderOpen, Swords } from "lucide-react"
+import { Plus, Trash, User, ArrowSquareOut, CaretUp, CaretDown, FloppyDisk, FolderOpen, Sword } from "@phosphor-icons/react"
 import { MONSTERS } from "@/lib/monsters-data"
 import Cookies from "js-cookie"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
@@ -514,7 +514,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                       onClick={() => handleDeleteParty(party.id)}
                       className="px-2 h-7 text-red-600 hover:text-red-700"
                     >
-                      <Trash2 size={12} />
+                      <Trash size={12} />
                     </Button>
                   </div>
                 ))}
@@ -552,7 +552,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                       onClick={() => handleDeleteEncounter(encounter.id)}
                       className="px-2 h-7 text-red-600 hover:text-red-700"
                     >
-                      <Trash2 size={12} />
+                      <Trash size={12} />
                     </Button>
                   </div>
                 ))}
@@ -598,7 +598,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
                 <div>
                   <h4 className="text-md font-semibold mb-3 flex items-center gap-2">
-                    <Swords size={18} className="text-monster" />
+                    <Sword size={18} className="text-monster" />
                     Monsters
                   </h4>
                   {combatSetup.monsters.length === 0 ? (
@@ -642,7 +642,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                 Cancel
               </Button>
               <Button onClick={handleStartCombat} className="gap-2">
-                <Swords size={16} />
+                <Sword size={16} />
                 Start Combat
               </Button>
             </div>
@@ -720,7 +720,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                               className="px-2 h-7"
                               disabled={player.level <= 1}
                             >
-                              <ChevronDown size={14} />
+                              <CaretDown size={14} />
                             </Button>
                             <Button
                               size="sm"
@@ -729,7 +729,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                               className="px-2 h-7"
                               disabled={player.level >= 20}
                             >
-                              <ChevronUp size={14} />
+                              <CaretUp size={14} />
                             </Button>
                             <Button
                               size="sm"
@@ -737,7 +737,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                               onClick={() => handleDeletePlayer(player.id)}
                               className="px-2 h-7 text-red-600 hover:text-red-700"
                             >
-                              <Trash2 size={14} />
+                              <Trash size={14} />
                             </Button>
                           </div>
                         </div>
@@ -755,7 +755,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                           className="flex-1"
                         />
                         <Button onClick={handleSaveParty} size="sm" className="px-3">
-                          <Save size={16} />
+                          <FloppyDisk size={16} />
                         </Button>
                       </div>
                     </div>
@@ -853,7 +853,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                                 className="text-sm font-medium hover:text-blue-600 hover:underline flex items-center gap-1"
                               >
                                 {monster.name}
-                                <ExternalLink size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <ArrowSquareOut size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                               </a>
                               <span className="text-xs px-2 py-0.5 rounded bg-gray-200 text-gray-700">
                                 CR {monster.cr}
@@ -869,7 +869,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                             onClick={() => handleDeleteMonster(monster.id)}
                             className="px-2 text-red-600 hover:text-red-700"
                           >
-                            <Trash2 size={14} />
+                            <Trash size={14} />
                           </Button>
                         </div>
                       ))}
@@ -886,7 +886,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                           className="flex-1"
                         />
                         <Button onClick={handleSaveEncounter} size="sm" className="px-3">
-                          <Save size={16} />
+                          <FloppyDisk size={16} />
                         </Button>
                       </div>
                     </div>
@@ -907,7 +907,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                   <CardTitle className="text-lg">Encounter Analysis</CardTitle>
                   {canStartCombat && (
                     <Button onClick={handleOpenCombatSetup} className="gap-2">
-                      <Swords size={16} />
+                      <Sword size={16} />
                       Start Combat
                     </Button>
                   )}

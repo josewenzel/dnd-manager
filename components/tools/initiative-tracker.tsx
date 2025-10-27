@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Plus, Trash2, Swords, User, Minus, Heart, X, Shield, ArrowUpDown } from "lucide-react"
+import { Plus, Trash, Sword, User, Minus, Heart, X, Shield, ArrowsDownUp } from "@phosphor-icons/react"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 
 const DND_CONDITIONS: Record<string, string> = {
@@ -294,7 +294,7 @@ export function InitiativeTracker() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <Swords size={14} className="text-monster" />
+                    <Sword size={14} className="text-monster" />
                     Monsters:
                   </span>
                   <span className="font-medium">
@@ -312,7 +312,7 @@ export function InitiativeTracker() {
                   <CardTitle className="text-lg">Combat Order</CardTitle>
                   {combatants.length > 0 && (
                     <Button variant="destructive" onClick={handleClearAll} className="gap-2">
-                      <Trash2 size={16} />
+                      <Trash size={16} />
                       End Combat
                     </Button>
                   )}
@@ -365,7 +365,7 @@ export function InitiativeTracker() {
                               ) : combatant.type === "ally" ? (
                                 <Shield size={18} className="text-ally shrink-0" />
                               ) : (
-                                <Swords size={18} className="text-monster shrink-0" />
+                                <Sword size={18} className="text-monster shrink-0" />
                               )}
                               <span className="font-medium text-lg">{combatant.name}</span>
                             </div>
@@ -379,7 +379,7 @@ export function InitiativeTracker() {
                             onClick={() => handleDeleteCombatant(combatant.id)}
                             className="px-2 text-red-600 hover:text-red-700 shrink-0"
                           >
-                            <Trash2 size={16} />
+                            <Trash size={16} />
                           </Button>
                         </div>
                         {(combatant.type === "monster" || combatant.type === "ally") && combatant.currentHp !== undefined && (
@@ -488,7 +488,7 @@ export function InitiativeTracker() {
                             onClick={() => handleMoveDown(index)}
                             className="p-2 rounded-md border border-card-border bg-white hover:bg-card-hover transition-colors"
                           >
-                            <ArrowUpDown size={16} className="text-gray-500 hover:text-gray-700" />
+                            <ArrowsDownUp size={16} className="text-gray-500 hover:text-gray-700" />
                           </button>
                         </div>
                       )}

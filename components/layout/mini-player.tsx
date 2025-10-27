@@ -2,7 +2,7 @@
 
 import { useMusicContext } from "@/contexts/music-context"
 import { Button } from "@/components/ui/button"
-import { X, Music2 } from "lucide-react"
+import { X, MusicNote } from "@phosphor-icons/react"
 
 export function MiniPlayer() {
   const { currentVideoId, videos, setCurrentVideoId } = useMusicContext()
@@ -19,7 +19,7 @@ export function MiniPlayer() {
     <div className="fixed bottom-4 right-4 z-50 w-80 bg-white border-2 border-gray-300 rounded-lg shadow-2xl overflow-hidden">
       <div className="flex items-center justify-between p-2 bg-gray-100 border-b border-gray-300">
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Music2 size={14} />
+          <MusicNote size={14} />
           <span className="text-xs font-medium truncate">{currentVideo.title}</span>
         </div>
         <Button

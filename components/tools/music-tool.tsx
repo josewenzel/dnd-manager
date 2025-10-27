@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Modal, ModalContent } from "@/components/ui/modal"
-import { Play, Trash2, Plus, Info } from "lucide-react"
+import { Play, Trash, Plus, Info } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useMusicContext } from "@/contexts/music-context"
 
@@ -137,7 +137,7 @@ export function MusicTool() {
                     variant="destructive"
                     onClick={() => handleDeleteVideo(video.id)}
                   >
-                    <Trash2 size={16} />
+                    <Trash size={16} />
                   </Button>
                 </div>
               </div>

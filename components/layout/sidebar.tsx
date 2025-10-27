@@ -1,6 +1,6 @@
 "use client"
 
-import { Music, Swords, Users, Menu, X } from "lucide-react"
+import { MusicNote, Sword, Users, List, X } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
 import { ReactNode, useState } from "react"
 
@@ -14,12 +14,12 @@ const TOOLS: Tool[] = [
   {
     id: "music",
     name: "Music",
-    icon: <Music size={20} />,
+    icon: <MusicNote size={20} />,
   },
   {
     id: "initiative",
     name: "Initiative",
-    icon: <Swords size={20} />,
+    icon: <Sword size={20} />,
   },
   {
     id: "encounter",
@@ -45,7 +45,7 @@ export function Sidebar({ activeTool, setActiveTool }: { activeTool: string; set
           className="text-white p-2"
           aria-label="Toggle menu"
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={24} /> : <List size={24} />}
         </button>
       </div>
 
