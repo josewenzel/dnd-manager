@@ -39,7 +39,7 @@ export function Sidebar({ activeTool, setActiveTool }: { activeTool: string; set
   return (
     <>
       <div className="md:hidden fixed top-0 left-0 right-0 bg-black p-4 flex items-center justify-between shadow-lg z-50">
-        <h1 className="text-xl font-bold text-white">D&D Manager</h1>
+        <h1 className="text-xl font-bold text-white">Lute and Loot</h1>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="text-white p-2"
@@ -73,7 +73,7 @@ export function Sidebar({ activeTool, setActiveTool }: { activeTool: string; set
         `}
       >
         <div className="mb-8 hidden md:block">
-          <h1 className="text-xl font-bold text-white">D&D Manager</h1>
+          <h1 className="text-xl font-bold text-white">Lute and Loot</h1>
         </div>
 
         <nav className="flex-1 space-y-2">

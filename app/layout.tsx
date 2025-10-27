@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "D&D Manager",
+  title: "Lute and Loot",
   description: "Manage your D&D sessions",
 };
 

@@ -1,4 +1,4 @@
-  # D&D Manager
+  # Lute and Loot
 
 A comprehensive D&D 5e session management tool with multiple integrated tools for Dungeon Masters. Manage encounters, track initiative, play ambient music, and more—all in one place.
 
