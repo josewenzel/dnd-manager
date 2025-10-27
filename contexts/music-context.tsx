@@ -16,6 +16,7 @@ interface MusicContextType {
   setCurrentVideoId: (id: string | null) => void
   addVideo: (video: Video) => void
   deleteVideo: (id: string) => void
+  updateVideo: (id: string, updates: Partial<Omit<Video, 'id'>>) => void
 }
 
 const MusicContext = createContext<MusicContextType | undefined>(undefined)
@@ -71,6 +72,10 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     setVideos(videos.filter((v) => v.id !== id))
   }
 
+  const updateVideo = (id: string, updates: Partial<Omit<Video, 'id'>>) => {
+    setVideos(videos.map((v) => (v.id === id ? { ...v, ...updates } : v)))
+  }
+
   return (
     <MusicContext.Provider
       value={{
@@ -80,6 +85,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         setCurrentVideoId,
         addVideo,
         deleteVideo,
+        updateVideo,
       }}
     >
       {children}

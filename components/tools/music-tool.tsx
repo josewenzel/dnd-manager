@@ -5,16 +5,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Modal, ModalContent } from "@/components/ui/modal"
-import { Play, Trash, Plus, Info } from "@phosphor-icons/react"
+import { Play, Trash, Plus, Info, PencilSimple } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useMusicContext } from "@/contexts/music-context"
 
 export function MusicTool() {
-  const { videos, currentVideoId, setCurrentVideoId, addVideo, deleteVideo } = useMusicContext()
+  const { videos, currentVideoId, setCurrentVideoId, addVideo, deleteVideo, updateVideo } = useMusicContext()
   const [urlInput, setUrlInput] = useState("")
   const [titleInput, setTitleInput] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
   const [showInfoModal, setShowInfoModal] = useState(false)
+  const [editingVideoId, setEditingVideoId] = useState<string | null>(null)
+  const [editTitleInput, setEditTitleInput] = useState("")
+  const [editUrlInput, setEditUrlInput] = useState("")
 
   const extractYouTubeId = (url: string): string | null => {
     try {
@@ -60,6 +63,44 @@ export function MusicTool() {
 
   const handleDeleteVideo = (videoId: string) => {
     deleteVideo(videoId)
+  }
+
+  const handleEditVideo = (videoId: string) => {
+    const video = videos.find((v) => v.id === videoId)
+    if (!video) return
+    
+    setEditingVideoId(videoId)
+    setEditTitleInput(video.title)
+    const youtubeId = video.youtubeUrl.split("/embed/")[1]?.split("?")[0]
+    setEditUrlInput(`https://www.youtube.com/watch?v=${youtubeId}`)
+  }
+
+  const handleSaveEdit = () => {
+    if (!editTitleInput.trim() || !editUrlInput.trim()) {
+      alert("Please enter both title and URL")
+      return
+    }
+
+    const youtubeId = extractYouTubeId(editUrlInput)
+    if (!youtubeId) {
+      alert("Invalid YouTube URL")
+      return
+    }
+
+    updateVideo(editingVideoId!, {
+      title: editTitleInput,
+      youtubeUrl: `https://www.youtube.com/embed/${youtubeId}`,
+    })
+
+    setEditingVideoId(null)
+    setEditTitleInput("")
+    setEditUrlInput("")
+  }
+
+  const handleCancelEdit = () => {
+    setEditingVideoId(null)
+    setEditTitleInput("")
+    setEditUrlInput("")
   }
 
   const getYouTubeThumbnail = (embedUrl: string) => {
@@ -113,38 +154,87 @@ export function MusicTool() {
       <div className="max-w-7xl">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {videos.map((video) => (
-            <Card key={video.id} className={`overflow-hidden cursor-pointer transition-all ${
-              currentVideoId === video.id ? "ring-2 ring-black" : ""
-            }`}>
-              <div className="relative aspect-video bg-gray-900">
-                <Image
-                  src={getYouTubeThumbnail(video.youtubeUrl)}
-                  alt={video.title}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handlePlayVideo(video.id)}
-                    className="gap-2"
-                  >
-                    <Play size={16} />
-                    Play
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDeleteVideo(video.id)}
-                  >
-                    <Trash size={16} />
-                  </Button>
+            editingVideoId === video.id ? (
+              <Card key={video.id} className="overflow-hidden">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Edit Video</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div>
+                    <label className="text-xs text-gray-600 mb-1 block">Title</label>
+                    <Input
+                      placeholder="e.g., Forest Ambience"
+                      value={editTitleInput}
+                      onChange={(e) => setEditTitleInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleSaveEdit()}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600 mb-1 block">YouTube URL</label>
+                    <Input
+                      placeholder="https://youtube.com/..."
+                      value={editUrlInput}
+                      onChange={(e) => setEditUrlInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleSaveEdit()}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={handleSaveEdit} className="flex-1 h-9 text-sm">
+                      Save
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={handleCancelEdit}
+                      className="h-9 text-sm"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card key={video.id} className={`overflow-hidden cursor-pointer transition-all ${
+                currentVideoId === video.id ? "ring-2 ring-black" : ""
+              }`}>
+                <div className="relative aspect-video bg-gray-900">
+                  <Image
+                    src={getYouTubeThumbnail(video.youtubeUrl)}
+                    alt={video.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handlePlayVideo(video.id)}
+                      className="gap-2"
+                    >
+                      <Play size={16} />
+                      Play
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditVideo(video.id)}
+                    >
+                      <PencilSimple size={16} />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDeleteVideo(video.id)}
+                    >
+                      <Trash size={16} />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <CardContent className="p-4 pt-5">
-                <h3 className="font-medium text-sm truncate">{video.title}</h3>
-              </CardContent>
-            </Card>
+                <CardContent className="p-4 pt-5">
+                  <h3 className="font-medium text-sm truncate">{video.title}</h3>
+                </CardContent>
+              </Card>
+            )
           ))}
 
           {showAddForm ? (
