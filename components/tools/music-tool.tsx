@@ -195,7 +195,7 @@ export function MusicTool() {
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="border-2 border-dashed border-card-border bg-card-bg hover:bg-card-hover hover:border-gray-400 rounded-lg transition-all h-full flex items-center justify-center group"
+              className="border-2 border-dashed border-card-border bg-card-bg hover:bg-card-hover hover:border-gray-400 rounded-lg transition-all h-full md:min-h-[240px] flex items-center justify-center group"
             >
               <div className="text-center">
                 <Plus size={48} className="mx-auto text-gray-400 group-hover:text-gray-600 transition-colors mb-2" />
