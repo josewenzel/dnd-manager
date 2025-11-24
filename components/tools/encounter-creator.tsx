@@ -246,6 +246,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
     const updated = [...savedEncounters, newEncounter]
     setSavedEncounters(updated)
     setEncounterNameInput("")
+    setMonsters([])
     alert(`Encounter "${newEncounter.name}" saved!`)
   }
 
@@ -269,15 +270,24 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
       return
     }
 
-    setMonsters([
-      ...monsters,
-      {
-        id: `monster-${Date.now()}`,
-        name: monster.name,
-        cr: monster.cr,
-        count,
-      },
-    ])
+    const existingMonster = monsters.find((m) => m.name === monster.name)
+    if (existingMonster) {
+      setMonsters(
+        monsters.map((m) =>
+          m.id === existingMonster.id ? { ...m, count: m.count + count } : m
+        )
+      )
+    } else {
+      setMonsters([
+        ...monsters,
+        {
+          id: `monster-${Date.now()}`,
+          name: monster.name,
+          cr: monster.cr,
+          count,
+        },
+      ])
+    }
     setMonsterInput("")
     setMonsterCountInput("1")
     setShowSuggestions(false)
