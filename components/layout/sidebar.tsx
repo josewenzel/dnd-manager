@@ -2,7 +2,7 @@
 
 import { MusicNote, Sword, Users, List, X } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
-import { ReactNode, useState, useEffect } from "react"
+import { ReactNode, useState } from "react"
 
 interface Tool {
   id: string
@@ -30,13 +30,6 @@ const TOOLS: Tool[] = [
 
 export function Sidebar({ activeTool, setActiveTool }: { activeTool: string; setActiveTool: (id: string) => void }) {
   const [isOpen, setIsOpen] = useState(false)
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).kofiwidget2) {
-      (window as any).kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'O4O01P2VK9');
-      (window as any).kofiwidget2.draw();
-    }
-  }, [])
 
   const handleToolSelect = (id: string) => {
     setActiveTool(id)
@@ -98,7 +91,14 @@ export function Sidebar({ activeTool, setActiveTool }: { activeTool: string; set
         </nav>
 
         <div className="flex flex-col items-center gap-3">
-          <div id="kofi-widget-container"></div>
+          <a 
+            href="https://ko-fi.com/lutenloot" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-[#FF5E5B] hover:bg-[#FF4744] text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            ☕ Support on Ko-fi
+          </a>
           <div className="text-xs text-gray-400 text-center">
             v0.1.0
           </div>
