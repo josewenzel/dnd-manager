@@ -8,6 +8,7 @@ import { Modal, ModalHeader, ModalContent } from "@/components/ui/modal"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Plus, Trash, User, ArrowSquareOut, CaretUp, CaretDown, FloppyDisk, FolderOpen, Sword } from "@phosphor-icons/react"
 import { MONSTERS } from "@/lib/monsters-data"
+import { getMonsterUrl } from "@/lib/utils"
 import Cookies from "js-cookie"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 
@@ -329,11 +330,6 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
     setShowSuggestions(false)
   }
 
-  const getMonsterUrl = (monsterName: string): string => {
-    const formattedName = monsterName.replace(/\s+/g, "")
-    return `https://roll20.net/compendium/dnd5e/Monsters:${formattedName}/#h-${formattedName}`
-  }
-
   const calculateEncounterDifficulty = (): {
     totalXP: number
     adjustedXP: number
@@ -429,7 +425,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
     const setupMonsters = monsters.flatMap((monster) => {
       const monsterData = MONSTERS.find(m => m.name === monster.name)
-      const baseHp = monsterData ? Math.floor(Math.random() * 20) + (monster.cr * 10) : 50
+      const baseHp = monsterData?.hp || 50
       
       return Array.from({ length: monster.count }, (_, i) => ({
         id: `monster-${monster.name}-${Date.now()}-${i}`,
@@ -633,7 +629,17 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
                     <div className="space-y-3">
                       {combatSetup.monsters.map((monster) => (
                         <div key={monster.id} className="p-3 border border-gray-200 rounded-md bg-red-50">
-                          <div className="font-medium mb-2">{monster.name}</div>
+                          <div className="font-medium mb-2 group">
+                            <a
+                              href={getMonsterUrl(monster.name.replace(/ #\d+$/, ""))}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-blue-600 hover:underline inline-flex items-center gap-1"
+                            >
+                              {monster.name}
+                              <ArrowSquareOut size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </a>
+                          </div>
                           <div className="grid grid-cols-2 gap-2">
                             <div>
                               <label className="text-xs text-gray-600 mb-1 block">Initiative</label>

@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Plus, Trash, Sword, User, Minus, Heart, X, Shield, ArrowsDownUp } from "@phosphor-icons/react"
+import { Plus, Trash, Sword, User, Minus, Heart, X, Shield, ArrowsDownUp, ArrowSquareOut } from "@phosphor-icons/react"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
+import { getMonsterUrl } from "@/lib/utils"
 
 const DND_CONDITIONS: Record<string, string> = {
   "Blinded": "Can't see, auto-fails sight checks. Attacks vs. have advantage, its attacks have disadvantage.",
@@ -367,7 +368,19 @@ export function InitiativeTracker() {
                               ) : (
                                 <Sword size={18} className="text-monster shrink-0" />
                               )}
-                              <span className="font-medium text-lg">{combatant.name}</span>
+                              {combatant.type === "monster" || combatant.type === "ally" ? (
+                                <a
+                                  href={getMonsterUrl(combatant.name.replace(/ #\d+$/, ""))}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-medium text-lg hover:text-blue-600 hover:underline flex items-center gap-1 group"
+                                >
+                                  {combatant.name}
+                                  <ArrowSquareOut size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </a>
+                              ) : (
+                                <span className="font-medium text-lg">{combatant.name}</span>
+                              )}
                             </div>
                             <span className="hidden md:block text-xs text-gray-500 capitalize shrink-0">
                               {combatant.type}
