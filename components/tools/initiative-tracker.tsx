@@ -323,12 +323,18 @@ export function InitiativeTracker() {
                 {combatants.length === 0 ? (
                   <EmptyState message="No combatants added yet" className="py-12" />
                 ) : (
-                  <div className="space-y-2">
-                    {combatants.map((combatant, index) => (
-                      <div key={combatant.id}>
-                        <div
-                          className="p-4 rounded-md border border-card-border bg-card-bg hover:bg-card-hover transition-colors"
-                        >
+                   <div className="space-y-2">
+                     {combatants.map((combatant, index) => {
+                       const isDisabled = (combatant.type === "monster" || combatant.type === "ally") && combatant.currentHp === 0
+                       return (
+                       <div key={combatant.id}>
+                         <div
+                           className={`p-4 rounded-md border border-card-border transition-colors ${
+                             isDisabled 
+                               ? "bg-gray-100 opacity-50" 
+                               : "bg-card-bg hover:bg-card-hover"
+                           }`}
+                         >
                           <div className="flex items-start justify-between gap-4 mb-3">
                             <div className="flex items-center gap-4">
                               <div className="relative md:-ml-2">
@@ -373,10 +379,14 @@ export function InitiativeTracker() {
                                   href={getMonsterUrl(combatant.name.replace(/ #\d+$/, ""))}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="font-medium text-lg hover:text-blue-600 hover:underline flex items-center gap-1 group"
+                                  className={`font-medium text-lg flex items-center gap-1 group ${
+                                    isDisabled 
+                                      ? "line-through text-gray-500" 
+                                      : "hover:text-blue-600 hover:underline"
+                                  }`}
                                 >
                                   {combatant.name}
-                                  <ArrowSquareOut size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  {!isDisabled && <ArrowSquareOut size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />}
                                 </a>
                               ) : (
                                 <span className="font-medium text-lg">{combatant.name}</span>
@@ -494,20 +504,20 @@ export function InitiativeTracker() {
                             </Button>
                           </div>
                         </div>
-                      </div>
-                      {canMoveDown(index) && (
-                        <div className="flex justify-center py-2">
-                          <button
-                            onClick={() => handleMoveDown(index)}
-                            className="p-2 rounded-md border border-card-border bg-white hover:bg-card-hover transition-colors"
-                          >
-                            <ArrowsDownUp size={16} className="text-gray-500 hover:text-gray-700" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    ))}
-                  </div>
+                       </div>
+                       {canMoveDown(index) && (
+                         <div className="flex justify-center py-2">
+                           <button
+                             onClick={() => handleMoveDown(index)}
+                             className="p-2 rounded-md border border-card-border bg-white hover:bg-card-hover transition-colors"
+                           >
+                             <ArrowsDownUp size={16} className="text-gray-500 hover:text-gray-700" />
+                           </button>
+                         </div>
+                       )}
+                     </div>
+                     )})}
+                   </div>
                 )}
               </CardContent>
             </Card>
