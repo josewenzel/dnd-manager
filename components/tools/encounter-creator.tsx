@@ -11,6 +11,7 @@ import { MONSTERS } from "@/lib/monsters-data"
 import { getMonsterUrl } from "@/lib/utils"
 import Cookies from "js-cookie"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
+import { toast } from "sonner"
 
 interface Player {
   id: string
@@ -168,12 +169,12 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
   const handleAddPlayer = () => {
     if (!nameInput.trim()) {
-      alert("Please enter a player name")
+      toast.error("Please enter a player name")
       return
     }
     const level = parseInt(levelInput)
     if (isNaN(level) || level < 1 || level > 20) {
-      alert("Level must be between 1 and 20")
+      toast.error("Level must be between 1 and 20")
       return
     }
 
@@ -200,11 +201,11 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
   const handleSaveParty = () => {
     if (!partyNameInput.trim()) {
-      alert("Please enter a party name")
+      toast.error("Please enter a party name")
       return
     }
     if (players.length === 0) {
-      alert("Add at least one player to save the party")
+      toast.error("Add at least one player to save the party")
       return
     }
 
@@ -216,7 +217,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
       )
       setSavedParties(updated)
       setOriginalPlayers([...players])
-      alert(`Party "${partyNameInput.trim()}" updated!`)
+      toast.success(`Party "${partyNameInput.trim()}" updated!`)
     } else {
       const newParty: SavedParty = {
         id: `party-${Date.now()}`,
@@ -227,7 +228,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
       const updated = [...savedParties, newParty]
       setSavedParties(updated)
       setPartyNameInput("")
-      alert(`Party "${newParty.name}" saved!`)
+      toast.success(`Party "${newParty.name}" saved!`)
     }
   }
 
@@ -246,11 +247,11 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
   const handleSaveEncounter = () => {
     if (!encounterNameInput.trim()) {
-      alert("Please enter an encounter name")
+      toast.error("Please enter an encounter name")
       return
     }
     if (monsters.length === 0) {
-      alert("Add at least one monster to save the encounter")
+      toast.error("Add at least one monster to save the encounter")
       return
     }
 
@@ -264,7 +265,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
     setSavedEncounters(updated)
     setEncounterNameInput("")
     setMonsters([])
-    alert(`Encounter "${newEncounter.name}" saved!`)
+    toast.success(`Encounter "${newEncounter.name}" saved!`)
   }
 
   const handleLoadEncounter = (encounter: SavedEncounter) => {
@@ -283,7 +284,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
 
     const count = parseInt(monsterCountInput)
     if (isNaN(count) || count < 1) {
-      alert("Count must be at least 1")
+      toast.error("Count must be at least 1")
       return
     }
 
@@ -469,7 +470,7 @@ export function EncounterCreator({ setActiveTool }: EncounterCreatorProps) {
     const allCombatants = [...playerCombatants, ...monsterCombatants]
     
     if (allCombatants.length === 0) {
-      alert("Please set initiative for at least one combatant")
+      toast.error("Please set initiative for at least one combatant")
       return
     }
 

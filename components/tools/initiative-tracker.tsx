@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { Plus, Trash, Sword, User, Minus, Heart, X, Shield, ArrowsDownUp, ArrowSquareOut } from "@phosphor-icons/react"
 import { useInitiativeContext, Combatant } from "@/contexts/initiative-context"
 import { getMonsterUrl } from "@/lib/utils"
+import { toast } from "sonner"
 
 const DND_CONDITIONS: Record<string, string> = {
   "Blinded": "Can't see, auto-fails sight checks. Attacks vs. have advantage, its attacks have disadvantage.",
@@ -40,20 +41,20 @@ export function InitiativeTracker() {
 
   const handleAddCombatant = () => {
     if (!nameInput.trim() || !initiativeInput.trim()) {
-      alert("Please enter both name and initiative")
+      toast.error("Please enter both name and initiative")
       return
     }
 
     const initiative = parseInt(initiativeInput)
     if (isNaN(initiative)) {
-      alert("Initiative must be a number")
+      toast.error("Initiative must be a number")
       return
     }
 
     if (typeInput === "monster" && hpInput.trim()) {
       const hp = parseInt(hpInput)
       if (isNaN(hp)) {
-        alert("HP must be a number")
+        toast.error("HP must be a number")
         return
       }
     }

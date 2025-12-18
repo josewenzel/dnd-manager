@@ -8,6 +8,7 @@ import { Modal, ModalContent } from "@/components/ui/modal"
 import { Play, Trash, Plus, Info, PencilSimple } from "@phosphor-icons/react"
 import Image from "next/image"
 import { useMusicContext } from "@/contexts/music-context"
+import { toast } from "sonner"
 
 export function MusicTool() {
   const { videos, currentVideoId, setCurrentVideoId, addVideo, deleteVideo, updateVideo } = useMusicContext()
@@ -35,13 +36,13 @@ export function MusicTool() {
 
   const handleAddVideo = () => {
     if (!urlInput.trim() || !titleInput.trim()) {
-      alert("Please enter both title and URL")
+      toast.error("Please enter both title and URL")
       return
     }
 
     const youtubeId = extractYouTubeId(urlInput)
     if (!youtubeId) {
-      alert("Invalid YouTube URL")
+      toast.error("Invalid YouTube URL")
       return
     }
 
@@ -77,13 +78,13 @@ export function MusicTool() {
 
   const handleSaveEdit = () => {
     if (!editTitleInput.trim() || !editUrlInput.trim()) {
-      alert("Please enter both title and URL")
+      toast.error("Please enter both title and URL")
       return
     }
 
     const youtubeId = extractYouTubeId(editUrlInput)
     if (!youtubeId) {
-      alert("Invalid YouTube URL")
+      toast.error("Invalid YouTube URL")
       return
     }
 
