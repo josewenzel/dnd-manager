@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -18,10 +17,6 @@ export default function RootLayout({
       <body className="antialiased m-0 p-0 overflow-hidden">
         {children}
         <Analytics />
-        <Script
-          src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"
-          strategy="lazyOnload"
-        />
       </body>
     </html>
   );

@@ -91,14 +91,6 @@ export function Sidebar({ activeTool, setActiveTool }: { activeTool: string; set
         </nav>
 
         <div className="flex flex-col items-center gap-3">
-          <a 
-            href="https://ko-fi.com/lutenloot" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="px-4 py-2 bg-[#FF5E5B] hover:bg-[#FF4744] text-white rounded-lg text-sm font-medium transition-colors"
-          >
-            ☕ Support on Ko-fi
-          </a>
           <div className="text-xs text-gray-400 text-center">
             v0.1.0
           </div>
